@@ -1,5 +1,5 @@
-#include "request.h"
-#include "common.h"
+#include "pear_ddns_request.h"
+#include "pear_ddns_private.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
@@ -22,10 +22,10 @@ int main()
         /*.record_type = */       "A",
         /*.record_id = */       "默认",
         /*.record = */          "",
-        /*.domain_name = */     "yourdomain.com",
-        /*.username = */        "yourusername",
-        /*.password = */        "yourpasswd",
-        /*.sub_domain_name = */ "yoursubdomain"
+        /*.domain_name = */     "pear.hk",
+        /*.username = */        "cheedoong@acm.org",
+        /*.password = */        "www.supear.cn",
+        /*.sub_domain_name = */ "supear.cn"
     };
 
     char strip[16] = "";
@@ -43,7 +43,7 @@ int main()
     {
         if ( getlocalip(strip, 16) || strcmp(strip, domain_info.record ) == 0 )
         {
-            printf("记录没改变！\n");
+            printf("Record No Change!\n");
             sleep(TIME_SLOT);
             continue;
         }
@@ -103,7 +103,7 @@ int getlocalip(char *ipbuffer, unsigned int len)
 
     {
 
-        perror("建立socket失败");
+        perror("Create Socket Fail");
 
         return -1;
 

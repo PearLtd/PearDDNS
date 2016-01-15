@@ -1,6 +1,6 @@
 #ifndef _REQUEST_H_
 #define _REQUEST_H_ 1
-#include "common.h"
+#include "pear_ddns_private.h"
 #include <curl/curl.h>
 
 int parseresult(const char *src, int length, result_t *result);

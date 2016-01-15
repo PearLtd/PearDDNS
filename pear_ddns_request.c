@@ -1,4 +1,4 @@
-#include "request.h"
+#include "pear_ddns_request.h"
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <string.h>
