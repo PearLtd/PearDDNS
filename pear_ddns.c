@@ -1,141 +1,64 @@
-#include "pear_ddns_request.h"
-#include "pear_ddns_private.h"
-#include <unistd.h>
-#include <stdio.h>
-#include <string.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <curl/curl.h>
+#include "pear_ddns_conf.h"
+#include "pear_ddns_query.h"
+#include "pear_ddns_base32.h" /* for encoding to domain allowable characters:
+http://stackoverflow.com/questions/7111881/what-are-the-allowed-characters-in-a-sub-domain */
 
-#define TIME_SLOT (5 * 60) //s
+#define TIME_SLOT (10*60) //s  or how about in config???
 
-int getlocalip(char *ipbuffer, unsigned int len);
-void dumpinfo(domain_info_t *info);
+int test_base36()
+{
+    unsigned char *my_ip, pear_ip_str[16], back[16];
+    my_ip = get_external_ip();
+    ipv4_str_to_pear_str(pear_ip_str, my_ip);
+    printf("pear ip: %s\n", pear_ip_str);
+    pear_str_to_ipv4_str(back, pear_ip_str);
+    printf("ip str: %s\n", back);
+    int i;
+    for (i = 0; i < 6; i++)
+        printf("%u, ", pear_ip_str[i]);
+    printf("\n", pear_ip_str[i]);
+    free(my_ip);
+    //printf("indexof: %u; decoding table: %u\n", indexof('c'), base32_decoding['c']);
+}
+
+int test_dns_records()
+{
+    char *my_ip, *domain_id, *record_id;
+    my_ip = get_external_ip();
+    printf("My external IP: %s\n", my_ip);
+    domain_id = get_domain_id();
+    printf("My domain_id: %s\n", domain_id);
+    //record_id = get_record_id(domain_id, "mail");
+    //printf("My record_id: %s\n", record_id);
+    //add_record("", "", );
+
+    free(my_ip);
+    free(domain_id);
+    //free(record_id);
+}
+
 int main()
 {
-    domain_info_t domain_info = 
-    {
-        /*.domain_id = */       0,
-        /*.record_id = */       0,
-        /*.record_type = */       "A",
-        /*.record_id = */       "默认",
-        /*.record = */          "",
-        /*.domain_name = */     "pear.hk",
-        /*.username = */        "cheedoong@acm.org",
-        /*.password = */        "www.supear.cn",
-        /*.sub_domain_name = */ "supear.cn"
-    };
+    pear_ddns_conf_t conf;
+    pear_ddns_init_conf(&conf);
+    pear_ddns_req_t req;
+    pear_ddns_rsp_t rsp;
 
-    char strip[16] = "";
-    
-    if( init_info(&domain_info) )
-    {
-        printf("init domain info failed!\n");
-    }
-    
-    printf( "get info success! begin daemon\n" );
-    
-    daemon(1, 0);
-    
-    while(1)
-    {
-        if ( getlocalip(strip, 16) || strcmp(strip, domain_info.record ) == 0 )
-        {
-            printf("Record No Change!\n");
-            sleep(TIME_SLOT);
-            continue;
-        }
-    
-        if( update_record(&domain_info) )
-        {
-            if ( init_info(&domain_info) == 0 && update_record(&domain_info) == 0)
-            {
-                strncpy(domain_info.record, strip, 16);
-                domain_info.record[15] = '\0';
-                sleep(TIME_SLOT);
-                continue;
-            }
-            printf("update domain record failed!\n");
-            break;
-        }
+/*
+    char *my_ip, *domain_id, *record_id;
+    my_ip = get_external_ip();
+    printf("My external IP: %s\n", my_ip);
+    domain_id = get_domain_id();
+    printf("My domain_id: %s\n", domain_id);
+    record_id = get_record_id(domain_id,"A");
+    printf("My record_id: %s\n", record_id);
 
-        strncpy(domain_info.record, strip, 16);
-        domain_info.record[15] = '\0';
-        sleep(TIME_SLOT);
-    }
-
-    dumpinfo( &domain_info );
+    free(my_ip);
+    free(domain_id);
+    free(record_id);
+*/
+    //test_base36();
+    //test_dns_records();
+    check_and_update_records();
     return 0;
 }
-
-int getlocalip(char *ipbuffer, unsigned int len)
-{
-    struct sockaddr_in serv_addr;
-
-    int sockfd = -1;
-    struct hostent *host = NULL;
-    unsigned short int serv_port=6666;
-
-    char recv_buf[100] = {'\0'};
-
-    if ( !ipbuffer )
-    {
-        return -1;
-    }
-    
-    //get ip addr
-    if( (host = gethostbyname("ns1.dnspod.net")) == NULL)
-    {
-        perror("get host ip error ");
-        return -1;
-    }
-    serv_addr.sin_family = AF_INET;
-
-    serv_addr.sin_addr = *((struct in_addr *)host->h_addr);
-
-    serv_addr.sin_port = htons(serv_port);
-
-    memset(&(serv_addr.sin_zero),0,8);
-
-    if((sockfd=socket(PF_INET,SOCK_STREAM,0))==-1)
-
-    {
-
-        perror("Create Socket Fail");
-
-        return -1;
-
-    }
-
-    if(connect(sockfd,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in))==-1)
-
-    {
-
-        //perror(“connect failed!”);
-
-        return -1;
-
-    }
-
-    recv(sockfd,recv_buf,16,0);
-
-    close(sockfd);
-
-    strncpy(ipbuffer, recv_buf, len);
-    ipbuffer[len - 1] = '\0';
-    return 0;
-}
-
-void dumpinfo(domain_info_t *info)
-{
-    if( !info )
-    {
-        return;
-    }
-    
-    printf("domain_name=%s, domain_id=%d, record_name=%s, record_id=%d, record=%s\n"
-    , info->domain_name, info->domain_id, info->sub_domain_name, info->record_id, info->record);
-}
-
