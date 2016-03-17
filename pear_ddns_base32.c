@@ -6,7 +6,8 @@
 #include <stdint.h>
 #include "pear_ddns_base32.h"
 
-static const unsigned char pear_ddns_base32_enc_table[] = {
+static const unsigned char pear_ddns_base32_enc_table[] =
+{
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', /* 10 */
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',           /* 18 */
     'j', 'k',                                         /* 20 */
@@ -71,7 +72,8 @@ static int pear_ddns_base32_encode_tail(char *dest, const void *_src, size_t len
     for(k = 0 ; k < 8; k++ )
         dest[k] = pear_ddns_base32_padding;
 
-    switch(len) {
+    switch(len)
+    {
     case 5:
         dest[7] = pear_ddns_base32_enc_table[(src[4]) & 0x1F];
     case 4:
@@ -100,7 +102,8 @@ size_t pear_ddns_base32_enc(char *dest, const void *_src, size_t ssize)
     const unsigned char *src = _src;
 
 
-    if ( ssize > 0 && ssize <= 5 ) {
+    if ( ssize > 0 && ssize <= 5 )
+    {
         pear_ddns_base32_encode_tail(dest, src, ssize);
         dk = 8;
         goto out;
@@ -108,12 +111,14 @@ size_t pear_ddns_base32_enc(char *dest, const void *_src, size_t ssize)
 
     ssize -= 5;
 
-    for(dk = 0, sk = 0; sk <= ssize; sk+=5, dk+=8) {
+    for(dk = 0, sk = 0; sk <= ssize; sk += 5, dk += 8)
+    {
         pear_ddns_base32_encode_block(&dest[dk], &src[sk]);
     }
     ssize += 5;
 
-    if (ssize > sk) {
+    if (ssize > sk)
+    {
         pear_ddns_base32_encode_tail(&dest[dk], &src[sk], ssize - sk);
         dk += 8;
     }
@@ -121,11 +126,12 @@ size_t pear_ddns_base32_enc(char *dest, const void *_src, size_t ssize)
 out:
     dest[dk] = 0;
 
-    while(dest[dk-1] == 0 )
+    while(dest[dk - 1] == 0 )
         dk--;
 
-    while(dest[dk-1] == pear_ddns_base32_padding) {
-        dest[dk-1] = 0;
+    while(dest[dk - 1] == pear_ddns_base32_padding)
+    {
+        dest[dk - 1] = 0;
         dk--;
     }
     return dk;
@@ -137,8 +143,10 @@ static int pear_ddns_base32_decode_block(unsigned char *dest, const void *_src)
     const unsigned char * src = _src;
     int k;
     int end = 0;
-    for (k = 0; k < 8; k++) {
-        if (src[k] == 0  || src[k] == pear_ddns_base32_padding) {
+    for (k = 0; k < 8; k++)
+    {
+        if (src[k] == 0  || src[k] == pear_ddns_base32_padding)
+        {
             end = 1;
             break;
         }
@@ -152,53 +160,59 @@ static int pear_ddns_base32_decode_block(unsigned char *dest, const void *_src)
     dest[3] = (uint8_t)(((idx[4] << 7) & 0x80) | ((idx[5] << 2) & 0x7C) | ((idx[6] >> 3) & 0x3));
     dest[4] = (uint8_t)(((idx[6] << 5) & 0xE0) | ((idx[7] & 0x1F)));
 
-    if (end) {
-        switch(k) {
-            case 0:
-                end = ((idx[0] << 3) & 0xF8) ? 1 : 0;
-                break;
-            case 1:
-                end = ((idx[1] << 6) & 0xC0) ? 2 : 1;
-                break;
-            case 2:
-                end = 2;
-                break;
-            case 3:
-                end = ((idx[3] << 4) & 0xF0 ) ? 3 : 2;
-                break;
-            case 4:
-                end = ((idx[4] << 7) & 0x80 ) ? 4 : 3;
-                break;
-            case 5:
-                end = 4;
-                break;
-            case 6:
-                end = ((idx[6] << 5) & 0xE0 ) ? 5 : 4;
-                break;
-            case 7:
-                end = 5;
-                break;
+    if (end)
+    {
+        switch(k)
+        {
+        case 0:
+            end = ((idx[0] << 3) & 0xF8) ? 1 : 0;
+            break;
+        case 1:
+            end = ((idx[1] << 6) & 0xC0) ? 2 : 1;
+            break;
+        case 2:
+            end = 2;
+            break;
+        case 3:
+            end = ((idx[3] << 4) & 0xF0 ) ? 3 : 2;
+            break;
+        case 4:
+            end = ((idx[4] << 7) & 0x80 ) ? 4 : 3;
+            break;
+        case 5:
+            end = 4;
+            break;
+        case 6:
+            end = ((idx[6] << 5) & 0xE0 ) ? 5 : 4;
+            break;
+        case 7:
+            end = 5;
+            break;
         }
     }
     return end;
 }
 
 
-size_t pear_ddns_base32_dec(void *dest, size_t buf_size, const char * src) {
+size_t pear_ddns_base32_dec(void *dest, size_t buf_size, const char * src)
+{
     int sk, dk;
     size_t src_len;
     src_len = strlen(src);
 
-    if(buf_size <= 5)  {
-    	char small_buf[5]; /* small buffer for 1-5 bytes stuff */
-    	pear_ddns_base32_decode_block(small_buf, src);
-    	memcpy(dest, small_buf, buf_size);
-    	return 0;
+    if(buf_size <= 5)
+    {
+        char small_buf[5]; /* small buffer for 1-5 bytes stuff */
+        pear_ddns_base32_decode_block(small_buf, src);
+        memcpy(dest, small_buf, buf_size);
+        return 0;
     }
 
-    for(sk=0, dk=0; sk < src_len; sk+=8, dk+=5) {
-        int end = pear_ddns_base32_decode_block((unsigned char *)dest+dk, &src[sk]);
-        if ( end ) {
+    for(sk = 0, dk = 0; sk < src_len; sk += 8, dk += 5)
+    {
+        int end = pear_ddns_base32_decode_block((unsigned char *)dest + dk, &src[sk]);
+        if ( end )
+        {
             dk += end - 1;
             break;
         }
@@ -216,7 +230,7 @@ size_t pear_ddns_base32_encsize(size_t count)
     if ( size % 5 == 0 )
         return size / 5;
     else
-        return 1 + size/5;
+        return 1 + size / 5;
 }
 
 size_t pear_ddns_base32_decsize(size_t count)

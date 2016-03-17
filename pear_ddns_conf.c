@@ -17,7 +17,7 @@ int pear_ddns_init_conf(pear_ddns_conf_t *conf)
         fp = fopen("/etc/pear_ddns.conf", "rb");
     if (!fp)
     {
-        strncpy(conf->login_token, "12079,84f7755f2464126c6757dd10eac202e5", sizeof(conf->login_token));
+        strncpy(conf->login_token, "12079,84f7755f2464126c6757dd10eac202e4", sizeof(conf->login_token));
         strncpy(conf->format, "json", sizeof(conf->format));
         strncpy(conf->domain, "supear.cn", sizeof(conf->domain));
         strncpy(conf->user_agent, "Pear DDNS Client/1.0.0 (service@pear.hk)", sizeof(conf->user_agent));

@@ -6,7 +6,6 @@
 #include <string.h>
 #include <stdint.h>
 
-
 #include "pear_ddns_base32.h"
 
 uint32_t ipv4_str_to_int32(const char *ip_str);

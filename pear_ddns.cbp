@@ -33,6 +33,14 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="pear_ddns_conf.h" />
+		<Unit filename="pear_ddns_daemon_service.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pear_ddns_daemon_service.h" />
+		<Unit filename="pear_ddns_lnx_daemon.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pear_ddns_lnx_daemon.h" />
 		<Unit filename="pear_ddns_query.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -41,6 +49,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="pear_ddns_util.h" />
+		<Unit filename="pear_ddns_win_service.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pear_ddns_win_service.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
