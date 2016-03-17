@@ -23,7 +23,7 @@ int pear_ddns_main(int argc, const char *argv[])
     return 0;
 }
 
-int pear_ddns_process(char *old_ip, char *new_ip)
+int pear_ddns_process()
 {
     if(old_ip == NULL)
     {
@@ -41,4 +41,5 @@ int pear_ddns_process(char *old_ip, char *new_ip)
         old_ip = new_ip;
         new_ip = NULL;
     }
+    return 0;
 }

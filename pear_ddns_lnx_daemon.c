@@ -52,7 +52,7 @@ int lnx_write()
     printf("Start Daemon\n");
     while(1)
     {
-        pear_ddns_process(old_ip, new_ip);
+        pear_ddns_process();
         printf("HeartBeat\n");
         sleep(600);
     }

@@ -97,7 +97,7 @@ int win_write()
         if(i == 559)
         {
             printf("HeartBeat\n");
-            pear_ddns_process(old_ip, new_ip);
+            pear_ddns_process();
             i = 0;
         }
         else

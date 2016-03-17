@@ -20,6 +20,6 @@ typedef struct
 
 char *old_ip, *new_ip;
 
-int process_task(char *old_ip, char *new_ip);
+int pear_ddns_process();
 
 
